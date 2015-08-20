@@ -11,6 +11,7 @@ namespace PropertyTools.Wpf
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Globalization;
     using System.Windows;
@@ -312,7 +313,22 @@ namespace PropertyTools.Wpf
         /// </summary>
         protected void SetEnumItemsSource()
         {
-            this.ItemsSource = Enum.GetValues(this.PropertyType);
+            var nullableType = Nullable.GetUnderlyingType(PropertyType);
+            if(nullableType != null)
+            {
+                var source = new List<object>();
+                source.Add(null);
+                foreach(var e in Enum.GetValues(nullableType))
+                {
+                    source.Add(e);
+                }
+
+                this.ItemsSource = source;
+            }
+            else
+            {
+                ItemsSource = Enum.GetValues(PropertyType);
+            }            
         }
     }
 }
