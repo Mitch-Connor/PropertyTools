@@ -2189,23 +2189,37 @@ namespace PropertyTools.Wpf
                 }
 
                 object convertedValue;
-                if (current != null && !pd.IsReadOnly && TryConvert(value, pd.PropertyType, out convertedValue))
+                if (current != null && !pd.IsReadOnly)
                 {
-                    if (pd.Descriptor != null)
-                    {
-                        pd.Descriptor.SetValue(current, convertedValue);
-                    }
-                    else
-                    {
-                        this.SetValue(cell, convertedValue);
+					bool converted = false;
+					if(pd.Converter != null)
+					{
+						convertedValue = pd.Converter.ConvertBack(value, pd.PropertyType, pd.ConverterParameter, pd.ConverterCulture);
+						converted = true;
+					}
+					else
+					{
+						converted = TryConvert(value, pd.PropertyType, out convertedValue);
+					}
 
-                        if (!(this.ItemsSource is INotifyCollectionChanged))
-                        {
-                            this.UpdateCellContent(cell);
-                        }
-                    }
+					if (converted)
+					{
+						if (pd.Descriptor != null)
+						{
+							pd.Descriptor.SetValue(current, convertedValue);
+						}
+						else
+						{
+							this.SetValue(cell, convertedValue);
 
-                    return true;
+							if (!(this.ItemsSource is INotifyCollectionChanged))
+							{
+								this.UpdateCellContent(cell);
+							}
+						}
+
+						return true;
+					}
                 }
             }
 
