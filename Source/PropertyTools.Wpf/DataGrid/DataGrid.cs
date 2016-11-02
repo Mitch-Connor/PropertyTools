@@ -4502,6 +4502,12 @@ namespace PropertyTools.Wpf
                                Padding = new Thickness(4, 2, 4, 2)
                            };
 
+                if (this.ItemHeaderPropertyPath != null && !this.ItemsInRows)
+                {
+                    cell.DataContext = this.GetItem(new CellRef(-1, j));
+                    cell.SetBinding(TextBlock.TextProperty, new Binding(this.ItemHeaderPropertyPath));
+                }
+
                 if (pd != null && pd.Tooltip != null)
                 {
                     ToolTipService.SetToolTip(cell, pd.Tooltip);
